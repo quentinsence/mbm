@@ -2,6 +2,8 @@
 
 VERSION="0.2"
 
+PROGRAM="${0##*/}"
+
 mkdir -p $HOME/.bookmarks
 mkdir -p $HOME/.bookmarks/cache
 touch $HOME/.bookmarks/list
@@ -37,7 +39,7 @@ add(){
   fi
 
   urlforfile=$(echo $url | sed 's/[/?=!:_]/-/g')
-  cachefile=$cachefolder/${urlforfile}-$(date "+%Y-%m-%d").html
+  cachefile=$cachefolder/${urlforfile}.html
   curl -s $url > $cachefile
   title=$(sed -rn 's/<title>(.*)<\/title>/\1/p' $cachefile)
   read -p "Description (default: $title): " description
@@ -54,24 +56,32 @@ search(){
 }
 
 list(){
-  echo $list
-  cat $list
+  echo
+  cat $list \
+    | awk '
+    BEGIN { FS = "|" }
+    {
+      printf "  \033[36m%s\033[0m\n", $1
+      printf "  \033[33m%s\033[0m\n", $2
+      printf "  \033[90m%s\033[0m\n\n", $3
+    }'
+  echo
 }
 
 usage() {
   cat <<EOF
 
-  Usage: mbm [OPTION] [cmd]
+  Usage: $PROGRAM [OPTION] [cmd]
 
   Commands:
 
-    $ mbm add <url>
+    $ $PROGRAM add <url>
         # add a bookmark with the given url
         
-    $ mbm search <query>
+    $ $PROGRAM search <query>
 	# search the bookmarks via full-text <query>
 
-    $ mbm list
+    $ $PROGRAM list
         # list all bookmarks
 
   Options:
@@ -83,12 +93,12 @@ EOF
 }
 
 case "$1" in
-  version|-V|--version) echo mbm $VERSION ;;
+  version|-V|--version) echo $PROGRAM $VERSION ;;
   help|-h|--help) usage ;;
   add|insert) add $2 ;;
-  list|ls) list ;;
+  list|show|ls) list ;;
   grep|search) search ${*:2} ;;
-  *) exit 1 ;;
+  *) usage ;;
 esac
 
 exit 0
