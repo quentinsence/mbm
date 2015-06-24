@@ -16,7 +16,9 @@ touch $list
 add(){
   overwrite=lulz
   url=$2
+  #lowercase tags to reduce duplicate categories
   tags=${@:3}
+  tags=${tags,,}
   
   count=$(grep "$url |" "$list" | wc -l)
   if [ $count -gt 0 ]
@@ -50,8 +52,7 @@ add(){
   [ -z $description ] && description=$title
   echo "$url | $description | $cachefile | $tags" >> $list
   
-  #lowercase tags to reduce duplicate categories
-  for tag in ${tags,,} ; do
+  for tag in $tags ; do
     mkdir -p $BMDIR/tags/$tag
     ln -s $cachefile $BMDIR/tags/$tag/${urlforfile}.html
   done
@@ -70,6 +71,7 @@ stats(){
   echo $list has
   echo `wc -l $list | awk '{print $1}'` bookmarks
   echo `ls -C1 $BMDIR/tags | wc -l | awk '{print $1}'` tags: `ls $BMDIR/tags`
+  echo
 }
 
 list(){
@@ -80,8 +82,9 @@ list(){
     {
       printf "  \033[36m%s\033[0m\n", $1
       printf "  \033[33m%s\033[0m\n", $2
-      printf "  \033[90m%s\033[0m\n\n", $3
-    }'
+      printf "  \033[90m%s\033[0m\n", $3
+      printf "  \033[90m%s\033[0m\n\n", $4
+      }'
   echo
 }
 
@@ -99,7 +102,7 @@ usage() {
 	# search the bookmarks via full-text <query>
 
     $ $PROGRAM stats
-	# return the amount of bookmarks
+	# return the amount of bookmarks and tags
 
     $ $PROGRAM list
         # list all bookmarks
