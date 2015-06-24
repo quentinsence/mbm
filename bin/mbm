@@ -55,6 +55,12 @@ search(){
   done
 }
 
+stats(){
+  echo
+  echo $list holds `wc -l $list | awk '{print $1}'` bookmarks
+  echo
+}
+
 list(){
   echo
   cat $list \
@@ -97,6 +103,7 @@ case "$1" in
   help|-h|--help) usage ;;
   add|insert) add $2 ;;
   list|show|ls) list ;;
+  stats) stats ;;
   grep|search) search ${*:2} ;;
   *) usage ;;
 esac
