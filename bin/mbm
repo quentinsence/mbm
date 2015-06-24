@@ -4,17 +4,20 @@ VERSION="0.2"
 
 PROGRAM="${0##*/}"
 
-mkdir -p $HOME/.bookmarks
-mkdir -p $HOME/.bookmarks/cache
-touch $HOME/.bookmarks/list
+BMDIR=$HOME/.bookmarks
 
-cachefolder=$HOME/.bookmarks/cache
-list=$HOME/.bookmarks/list
+mkdir -p $BMDIR
+mkdir -p $BMDIR/cache
+touch $BMDIR/list
+
+CACHEDIR=$BMDIR/cache
+list=$BMDIR/list
 
 add(){
   overwrite=lulz
-  url=$1
-
+  url=$2
+  tags=${@:3}
+  
   count=$(grep "$url |" "$list" | wc -l)
   if [ $count -gt 0 ]
     then
@@ -39,18 +42,25 @@ add(){
   fi
 
   urlforfile=$(echo $url | sed 's/[/?=!:_]/-/g')
-  cachefile=$cachefolder/${urlforfile}.html
+  cachefile=$CACHEDIR/${urlforfile}.html
   curl -s $url > $cachefile
-  title=$(sed -rn 's/<title>(.*)<\/title>/\1/p' $cachefile)
+  
+  title=$(sed -rn 's/.*<title>(.*)<\/title>.*/\1/p' $cachefile)
   read -p "Description (default: $title): " description
   [ -z $description ] && description=$title
-  echo "$url | $description | $cachefile" >> $list
+  echo "$url | $description | $cachefile | $tags" >> $list
+  
+  #lowercase tags to reduce duplicate categories
+  for tag in ${tags,,} ; do
+    mkdir -p $BMDIR/tags/$tag
+    ln -s $cachefile $BMDIR/tags/$tag/${urlforfile}.html
+  done
 }
 
 search(){
   terms=$@
   termsforgrep=$(echo $terms | sed 's/ /\\|/g')
-  for i in $(grep -li "$termsforgrep" $cachefolder/*) ; do
+  for i in $(grep -li "$termsforgrep" $CACHEDIR/*) ; do
     grep $i $list
   done
 }
@@ -81,11 +91,14 @@ usage() {
 
   Commands:
 
-    $ $PROGRAM add <url>
-        # add a bookmark with the given url
+    $ $PROGRAM add <url> [<tags>]
+        # add a bookmark with the given url and optional tags
         
     $ $PROGRAM search <query>
 	# search the bookmarks via full-text <query>
+
+    $ $PROGRAM stats
+	# return the amount of bookmarks
 
     $ $PROGRAM list
         # list all bookmarks
@@ -101,7 +114,7 @@ EOF
 case "$1" in
   version|-V|--version) echo $PROGRAM $VERSION ;;
   help|-h|--help) usage ;;
-  add|insert) add $2 ;;
+  add|insert) add "$@" ;;
   list|show|ls) list ;;
   stats) stats ;;
   grep|search) search ${*:2} ;;
