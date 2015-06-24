@@ -1,5 +1,7 @@
 #!/bin/bash
 
+VERSION="0.1"
+
 mkdir -p $HOME/.bookmarks
 mkdir -p $HOME/.bookmarks/cache
 touch $HOME/.bookmarks/list
@@ -8,60 +10,77 @@ cachefolder=$HOME/.bookmarks/cache
 list=$HOME/.bookmarks/list
 
 add(){
-overwrite=lulz
-url=$1
+  overwrite=lulz
+  url=$1
 
-count=$(grep "$url |" "$list" | wc -l)
-if [ $count -gt 0 ]
-then
-read -p "$url already exists, overwrite? y/N " overwrite
-fi
+  count=$(grep "$url |" "$list" | wc -l)
+  if [ $count -gt 0 ]
+    then
+    read -p "$url already exists, overwrite? y/N " overwrite
+  fi
 
-case $overwrite in
-y|Y)
-echo "**OVERWRITING**"
-over=y
-;;
-lulz)
-;;
-n|N|*)
-exit 0
-;;
-esac
+  case $overwrite in
+    y|Y)
+      echo "**OVERWRITING**"
+      over=y
+    ;;
+    lulz)
+    ;;
+    n|N|*)
+      exit 0
+    ;;
+  esac
 
-if [ "$over" = "y" ]
-then
-grep -v "^${url} |" $list > .temp ; mv .temp $list
-fi
+  if [ "$over" = "y" ]
+  then
+    grep -v "^${url} |" $list > .temp ; mv .temp $list
+  fi
 
-urlforfile=$(echo $url | sed 's/[/?=!:_]/-/g')
-cachefile=$cachefolder/${urlforfile}-$(date "+%Y-%m-%d").html
-curl -s $url > $cachefile
-title=$(perl -nle'print $& if m{<title>(.*?)</title>}' $cachefile | sed 's/[</>]//g' | awk '{gsub(/title/,"")}1')
-echo $title
-read -p "Description (default: $title): " description
-[ -z $description ] && description=$title
-echo "$url | $description | $cachefile" >> $list
+  urlforfile=$(echo $url | sed 's/[/?=!:_]/-/g')
+  cachefile=$cachefolder/${urlforfile}-$(date "+%Y-%m-%d").html
+  curl -s $url > $cachefile
+  title=$(perl -nle'print $& if m{<title>(.*?)</title>}' $cachefile | sed 's/[</>]//g' | awk '{gsub(/title/,"")}1')
+  echo $title
+  read -p "Description (default: $title): " description
+  [ -z $description ] && description=$title
+  echo "$url | $description | $cachefile" >> $list
 }
 
 search(){
-terms=$@
-termsforgrep=$(echo $terms | sed 's/ /\\|/g')
-for i in $(grep -li "$termsforgrep" $cachefolder/*) ; do
-grep $i $list
-done
+  terms=$@
+  termsforgrep=$(echo $terms | sed 's/ /\\|/g')
+  for i in $(grep -li "$termsforgrep" $cachefolder/*) ; do
+    grep $i $list
+  done
 }
 
-case $1 in
+usage() {
+  cat <<EOF
 
-add)
-add $2
-;;
-search)
-search ${*:2}
-;;
-*)
-exit 1
-;;
+  Usage: mbm [OPTION] [cmd]
 
+  Commands:
+
+    $ mbm add <url>
+        # add a bookmark with the given url
+        
+    $ mbm search <query>
+	# search the bookmarks via full-text <query>
+
+  Options:
+
+     -V, --version   display version information and exit
+     -h, --help      display this help information and exit
+
+EOF
+}
+
+case "$1" in
+  -V|--version) echo mbm $VERSION ;;
+  -h|--help) usage ;;
+  add) add $2 ;;
+  search) search ${*:2} ;;
+  *) exit 1 ;;
 esac
+
+exit 0
