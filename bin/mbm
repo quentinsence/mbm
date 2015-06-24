@@ -39,8 +39,7 @@ add(){
   urlforfile=$(echo $url | sed 's/[/?=!:_]/-/g')
   cachefile=$cachefolder/${urlforfile}-$(date "+%Y-%m-%d").html
   curl -s $url > $cachefile
-  title=$(perl -nle'print $& if m{<title>(.*?)</title>}' $cachefile | sed 's/[</>]//g' | awk '{gsub(/title/,"")}1')
-  echo $title
+  title=$(sed -rn 's/<title>(.*)<\/title>/\1/p' $cachefile)
   read -p "Description (default: $title): " description
   [ -z $description ] && description=$title
   echo "$url | $description | $cachefile" >> $list
