@@ -53,6 +53,11 @@ search(){
   done
 }
 
+list(){
+  echo $list
+  cat $list
+}
+
 usage() {
   cat <<EOF
 
@@ -66,6 +71,9 @@ usage() {
     $ mbm search <query>
 	# search the bookmarks via full-text <query>
 
+    $ mbm list
+        # list all bookmarks
+
   Options:
 
      -V, --version   display version information and exit
@@ -75,10 +83,11 @@ EOF
 }
 
 case "$1" in
-  -V|--version) echo mbm $VERSION ;;
-  -h|--help) usage ;;
-  add) add $2 ;;
-  search) search ${*:2} ;;
+  version|-V|--version) echo mbm $VERSION ;;
+  help|-h|--help) usage ;;
+  add|insert) add $2 ;;
+  list|ls) list ;;
+  grep|search) search ${*:2} ;;
   *) exit 1 ;;
 esac
 
