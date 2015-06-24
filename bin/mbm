@@ -5,13 +5,13 @@ VERSION="0.2"
 PROGRAM="${0##*/}"
 
 BMDIR=$HOME/.bookmarks
-
-mkdir -p $BMDIR
-mkdir -p $BMDIR/cache
-touch $BMDIR/list
-
 CACHEDIR=$BMDIR/cache
 list=$BMDIR/list
+
+mkdir -p $BMDIR
+mkdir -p $CACHEDIR
+touch $list
+
 
 add(){
   overwrite=lulz
@@ -67,8 +67,9 @@ search(){
 
 stats(){
   echo
-  echo $list holds `wc -l $list | awk '{print $1}'` bookmarks
-  echo
+  echo $list has
+  echo `wc -l $list | awk '{print $1}'` bookmarks
+  echo `ls -C1 $BMDIR/tags | wc -l | awk '{print $1}'` tags: `ls $BMDIR/tags`
 }
 
 list(){
