@@ -1,0 +1,67 @@
+#!/bin/bash
+
+mkdir -p $HOME/.bookmarks
+mkdir -p $HOME/.bookmarks/cache
+touch $HOME/.bookmarks/list
+
+cachefolder=$HOME/.bookmarks/cache
+list=$HOME/.bookmarks/list
+
+add(){
+overwrite=lulz
+url=$1
+
+count=$(grep "$url |" "$list" | wc -l)
+if [ $count -gt 0 ]
+then
+read -p "$url already exists, overwrite? y/N " overwrite
+fi
+
+case $overwrite in
+y|Y)
+echo "**OVERWRITING**"
+over=y
+;;
+lulz)
+;;
+n|N|*)
+exit 0
+;;
+esac
+
+if [ "$over" = "y" ]
+then
+grep -v "^${url} |" $list > .temp ; mv .temp $list
+fi
+
+urlforfile=$(echo $url | sed 's/[/?=!:_]/-/g')
+cachefile=$cachefolder/${urlforfile}-$(date "+%Y-%m-%d").html
+curl -s $url > $cachefile
+title=$(perl -nle'print $& if m{<title>(.*?)</title>}' $cachefile | sed 's/[</>]//g' | awk '{gsub(/title/,"")}1')
+echo $title
+read -p "Description (default: $title): " description
+[ -z $description ] && description=$title
+echo "$url | $description | $cachefile" >> $list
+}
+
+search(){
+terms=$@
+termsforgrep=$(echo $terms | sed 's/ /\\|/g')
+for i in $(grep -li "$termsforgrep" $cachefolder/*) ; do
+grep $i $list
+done
+}
+
+case $1 in
+
+add)
+add $2
+;;
+search)
+search ${*:2}
+;;
+*)
+exit 1
+;;
+
+esac
