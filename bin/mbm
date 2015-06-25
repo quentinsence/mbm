@@ -12,6 +12,17 @@ mkdir -p $BMDIR
 mkdir -p $CACHEDIR
 touch $list
 
+open() {
+  #extract the last url found and open it
+  url=`search ${*:2} | awk -F '|' '{print $1}' | tail -1`
+  if [ -x $url ] 
+    then
+      echo no matching url found
+    else
+      echo opening "$url"
+      xdg-open "$url"
+  fi
+}
 
 add(){
   overwrite=lulz
@@ -101,6 +112,10 @@ usage() {
     $ $PROGRAM search <query>
 	# search the bookmarks via full-text <query>
 
+    $ $PROGRAM open <query>
+	# search the bookmarks via full-text <query>
+	# and open the last url found in the default browser
+
     $ $PROGRAM stats
 	# return the amount of bookmarks and tags
 
@@ -121,6 +136,7 @@ case "$1" in
   add|insert) add "$@" ;;
   list|show|ls) list ;;
   stats) stats ;;
+  open) open "$@" ;;
   grep|search) search ${*:2} ;;
   *) usage ;;
 esac
