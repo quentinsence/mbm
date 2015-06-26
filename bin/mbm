@@ -17,8 +17,8 @@ open() {
   if [ -f $BMDIR/$keys ]
     then
       #if cached url file exists then extracts its url from list file 
-      keys=`echo $keys | awk -F '/' '{print $NF}'`
-      url=`grep $keys $list | awk -F '|' '{print $1}'`
+      file=`echo $keys | awk -F '/' '{print $NF}'`
+      url=`awk -F '|' '/'$file'/{print $1}' $list`
     else
       #search all entries and extract the last url found and open it
       search ${*:2} | awk -F '|' '{print $1}'
@@ -84,6 +84,15 @@ add(){
   git -C $BMDIR commit -am "new link $urlforfile"
 }
 
+fetch(){
+#
+  awk -F '|' -v BMDIR=$BMDIR '{ 
+      printf("\n%5d update %s",NR,$3) 
+      system("curl "$1" > "$3"")
+      system("git -C "BMDIR" commit -am \"updated "$1"\"")
+      }' $list
+}
+
 search(){
   terms=$@
   termsforgrep=$(echo $terms | sed 's/ /\\|/g')
@@ -112,12 +121,13 @@ list(){
       printf "  \033[33m%s\033[0m\n", $2
       printf "  \033[90m%s\033[0m\n", $3
       printf "  \033[90m%s\033[0m\n\n", $4
-      }'
+    }'
   echo
 }
 
 usage() {
   cat <<EOF
+  $PROGRAM $VERSION
 
   Usage: $PROGRAM [OPTION] [cmd]
 
@@ -154,6 +164,7 @@ case "$1" in
   add|insert) add "$@" ;;
   list|show|ls) list ;;
   stats) stats ;;
+  fetch|sync) fetch ;;
   open) open "${*:2}" ;;
   *) open "$@";;
   grep|search) search ${*:2} ;;

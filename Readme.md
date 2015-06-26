@@ -11,6 +11,7 @@ The first commit comes from the original post on http://www.reddit.com/r/command
 
 new features:
 .bash completion for urls, tags and commands
+.fetch refresh all bookmarks and log changes
 .tags as directories with symlinks to the cached files
 .git powered, all changes in the .bookmarks dir are tracked with git
 .open link in browser
