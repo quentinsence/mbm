@@ -38,6 +38,7 @@ add(){
   [[ -d $BMDIR/.git ]] || git -C $BMDIR init
   
   overwrite=lulz
+  gitnew="new"
   url=$2
   #lowercase tags to reduce duplicate categories
   tags=${@:3}
@@ -53,6 +54,7 @@ add(){
     y|Y|yes)
       echo "**OVERWRITING**"
       sed -i '\^$url^d' $list
+      gitnew="update"
     ;;
     lulz)
     ;;
@@ -76,12 +78,12 @@ add(){
   done
   
   git -C $BMDIR add .
-  git -C $BMDIR commit -am "new bookmark $url"
+  git -C $BMDIR commit -am "$gitnew bookmark $url"
 }
 
 fetch(){
-#
-  awk -F '|' -v BMDIR=$BMDIR '{ 
+  #fetch again all links. record all changes
+  awk -F '|' -v BMDIR=$BMDIR '{
       printf("\n%5d update %s",NR,$3) 
       system("curl "$1" > "$3"")
       system("git -C "BMDIR" commit -am \"updated "$1"\"")
