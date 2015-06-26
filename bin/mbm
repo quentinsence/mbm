@@ -58,7 +58,7 @@ add(){
   case $overwrite in
     y|Y|yes)
       echo "**OVERWRITING**"
-      sed -i '\^$url^d' $list
+      sed -i '\^'$url'^d' $list
       gitnew="update"
     ;;
     lulz)
@@ -97,13 +97,14 @@ fetch(){
 
 remove(){
   pathfile="$2"
+  #check the input is valid
   [[ -f $BMDIR/$pathfile ]] || die "$pathfile does not exist"
-  #rm $BMDIR/$pathfile || die "could not delete $BMDIR/$pathfile"
 
+  rm $BMDIR/$pathfile || die "could not delete $BMDIR/$pathfile"
   urlfile=`echo $pathfile | awk -F '/' '{print $NF}'`
-  sed -i '\^$urlfile^d' $list
-  #rm $BMDIR/tags/*/$urlfile || die "could not delete tags for $pathfile"
-  #git -C $BMDIR commit -am "removed bookmark $urlfile"
+  sed -i '\^'$urlfile'^d' $list
+  rm $BMDIR/tags/*/$urlfile || die "could not delete tags for $pathfile"
+  git -C $BMDIR commit -am "removed bookmark $urlfile"
 }
 
 search(){
