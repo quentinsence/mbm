@@ -14,8 +14,9 @@ touch $list
 
 open() {
   #extract the last url found and open it
+  search ${*:2} | awk -F '|' '{print $1}'
   url=`search ${*:2} | awk -F '|' '{print $1}' | tail -1`
-  if [ -x $url ] 
+  if [ -x $url ]
     then
       echo no matching url found
     else
@@ -25,6 +26,9 @@ open() {
 }
 
 add(){
+
+  [[ -d $BMDIR/.git ]] || git -C $BMDIR init
+  
   overwrite=lulz
   url=$2
   #lowercase tags to reduce duplicate categories
@@ -67,6 +71,9 @@ add(){
     mkdir -p $BMDIR/tags/$tag
     ln -s $cachefile $BMDIR/tags/$tag/${urlforfile}.html
   done
+  
+  git -C $BMDIR add .
+  git -C $BMDIR commit -am "new link $urlforfile"
 }
 
 search(){
@@ -75,6 +82,8 @@ search(){
   for i in $(grep -li "$termsforgrep" $CACHEDIR/*) ; do
     grep $i $list
   done
+  #send the last url found to the clipboard
+  #echo -n `grep $i $list | awk -F '|' '{print $1}' | tail -1` | xclip -selection "clipboard"
 }
 
 stats(){
@@ -111,11 +120,12 @@ usage() {
         
     $ $PROGRAM search <query>
 	# search the bookmarks via full-text <query>
-
+	# the last url is sent to the clipboard
+	
     $ $PROGRAM open <query>
 	# search the bookmarks via full-text <query>
 	# and open the last url found in the default browser
-
+	
     $ $PROGRAM stats
 	# return the amount of bookmarks and tags
 
