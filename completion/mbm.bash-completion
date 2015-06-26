@@ -58,11 +58,11 @@ _mbm()
 {
 	COMPREPLY=()
 	local cur="${COMP_WORDS[COMP_CWORD]}"
-	local commands="add insert list fetch sync show ls stats open grep search help version"
+	local commands="add insert rm remove del list fetch sync show ls stats open grep search help version"
 	if [[ $COMP_CWORD -gt 1 ]]; then
 		local lastarg="${COMP_WORDS[$COMP_CWORD-1]}"
 		case "${COMP_WORDS[1]}" in
-			ls|list|show|open|grep|search|add|insert)
+			ls|list|show|open|grep|search|add|insert|rm|remove|del)
 				_mbm_complete_entries
 				;;
 			show|-*)

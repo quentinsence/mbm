@@ -12,6 +12,11 @@ mkdir -p $BMDIR
 mkdir -p $CACHEDIR
 touch $list
 
+die() {
+  echo "$@" >&2
+  exit 1
+}
+
 open() {
   keys="$@"
   if [ -f $BMDIR/$keys ]
@@ -90,6 +95,17 @@ fetch(){
       }' $list
 }
 
+remove(){
+  pathfile="$2"
+  [[ -f $BMDIR/$pathfile ]] || die "$pathfile does not exist"
+  #rm $BMDIR/$pathfile || die "could not delete $BMDIR/$pathfile"
+
+  urlfile=`echo $pathfile | awk -F '/' '{print $NF}'`
+  sed -i '\^$urlfile^d' $list
+  #rm $BMDIR/tags/*/$urlfile || die "could not delete tags for $pathfile"
+  #git -C $BMDIR commit -am "removed bookmark $urlfile"
+}
+
 search(){
   terms=$@
   termsforgrep=$(echo $terms | sed 's/ /\\|/g')
@@ -147,7 +163,10 @@ usage() {
     $ $PROGRAM list
         # list all bookmarks
 
-  Options:
+    $ $PROGRAM rm <urlfile>
+        # remove the bookmark
+
+    Options:
 
      -V, --version   display version information and exit
      -h, --help      display this help information and exit
@@ -159,6 +178,7 @@ case "$1" in
   version|-V|--version) echo $PROGRAM $VERSION ;;
   help|-h|--help) usage ;;
   add|insert) add "$@" ;;
+  rm|remove|del) remove "$@" ;;
   list|show|ls) list ;;
   stats) stats ;;
   fetch|sync) fetch ;;
