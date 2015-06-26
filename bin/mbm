@@ -50,9 +50,9 @@ add(){
   fi
 
   case $overwrite in
-    y|Y)
+    y|Y|yes)
       echo "**OVERWRITING**"
-      over=y
+      sed -i '\^$url^d' $list
     ;;
     lulz)
     ;;
@@ -60,11 +60,6 @@ add(){
       exit 0
     ;;
   esac
-
-  if [ "$over" = "y" ]
-  then
-    grep -v "^${url} |" $list > .temp ; mv .temp $list
-  fi
 
   urlforfile=$(echo $url | sed 's/[/?=!:_]/-/g')
   cachefile=$CACHEDIR/${urlforfile}.html
@@ -77,11 +72,11 @@ add(){
   
   for tag in $tags ; do
     mkdir -p $BMDIR/tags/$tag
-    ln -s $cachefile $BMDIR/tags/$tag/${urlforfile}.html
+    ln -sf $cachefile $BMDIR/tags/$tag/${urlforfile}.html
   done
   
   git -C $BMDIR add .
-  git -C $BMDIR commit -am "new link $urlforfile"
+  git -C $BMDIR commit -am "new bookmark $url"
 }
 
 fetch(){
