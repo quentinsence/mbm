@@ -13,16 +13,24 @@ mkdir -p $CACHEDIR
 touch $list
 
 open() {
-  #extract the last url found and open it
-  search ${*:2} | awk -F '|' '{print $1}'
-  url=`search ${*:2} | awk -F '|' '{print $1}' | tail -1`
-  if [ -x $url ]
+  keys="$@"
+  if [ -f $BMDIR/$keys ]
     then
-      echo no matching url found
+      #if cached url file exists then extracts its url from list file 
+      keys=`echo $keys | awk -F '/' '{print $NF}'`
+      url=`grep $keys $list | awk -F '|' '{print $1}'`
     else
-      echo opening "$url"
-      xdg-open "$url"
+      #search all entries and extract the last url found and open it
+      search ${*:2} | awk -F '|' '{print $1}'
+      url=`search ${*:2} | awk -F '|' '{print $1}' | tail -1`
+      if [ -x $url ]
+	then
+	  echo no matching url found
+	  exit
+      fi
   fi
+  echo opening "$url"
+  xdg-open "$url"
 }
 
 add(){
@@ -122,7 +130,7 @@ usage() {
 	# search the bookmarks via full-text <query>
 	# the last url is sent to the clipboard
 	
-    $ $PROGRAM open <query>
+    $ $PROGRAM [open] <query>
 	# search the bookmarks via full-text <query>
 	# and open the last url found in the default browser
 	
@@ -146,9 +154,9 @@ case "$1" in
   add|insert) add "$@" ;;
   list|show|ls) list ;;
   stats) stats ;;
-  open) open "$@" ;;
+  open) open "${*:2}" ;;
+  *) open "$@";;
   grep|search) search ${*:2} ;;
-  *) usage ;;
 esac
 
 exit 0
