@@ -127,7 +127,7 @@ usage() {
 	# and open the last url found in the default browser
 	
     $ $PROGRAM stats
-	# return the amount of bookmarks and tags
+	# return the amount of bookmarks and list all tags
 
     $ $PROGRAM list
         # list all bookmarks

@@ -1,0 +1,87 @@
+# completion file for bash
+
+_mbm_complete_entries () {
+	prefix="$HOME/.bookmarks/"
+	suffix=".gpg"
+	autoexpand=${1:-0}
+
+	local IFS=$'\n'
+	local items=($(compgen -f $prefix$cur))
+	for item in ${items[@]}; do
+		[[ $item =~ /\.[^/]*$ ]] && continue
+
+		# if there is a unique match, and it is a directory with one entry
+		# autocomplete the subentry as well (recursively)
+		if [[ ${#items[@]} -eq 1 && $autoexpand -eq 1 ]]; then
+			while [[ -d $item ]]; do
+				local subitems=($(compgen -f "$item/"))
+				local filtereditems=( )
+				for item2 in "${subitems[@]}"; do
+					[[ $item2 =~ /\.[^/]*$ ]] && continue
+					filtereditems+=( "$item2" )
+				done
+				if [[ ${#filtereditems[@]} -eq 1 ]]; then
+					item="${filtereditems[0]}"
+				else
+					break
+				fi
+			done
+		fi
+
+		# append / to directories
+		[[ -d $item ]] && item="$item/"
+
+		item="${item%$suffix}"
+		COMPREPLY+=("${item#$prefix}")
+	done
+}
+
+_mbm_complete_folders () {
+	prefix="${mbmWORD_STORE_DIR:-$HOME/.mbmword-store/}"
+
+	local IFS=$'\n'
+	local items=($(compgen -d $prefix$cur))
+	for item in ${items[@]}; do
+		[[ $item == $prefix.* ]] && continue
+		COMPREPLY+=("${item#$prefix}/")
+	done
+}
+
+_mbm_complete_keys () {
+	local IFS=$'\n'
+	# Extract names and email addresses from gpg --list-keys
+	local keys="$(gpg2 --list-secret-keys --with-colons | cut -d : -f 10 | sort -u | sed '/^$/d')"
+	COMPREPLY+=($(compgen -W "${keys}" -- ${cur}))
+}
+
+_mbm()
+{
+	COMPREPLY=()
+	local cur="${COMP_WORDS[COMP_CWORD]}"
+	local commands="add insert list show ls stats open grep search help version"
+	if [[ $COMP_CWORD -gt 1 ]]; then
+		local lastarg="${COMP_WORDS[$COMP_CWORD-1]}"
+		case "${COMP_WORDS[1]}" in
+			ls|list|show)
+				_mbm_complete_entries
+				;;
+			show|-*)
+				_mbm_complete_entries 1
+				;;
+			insert)
+				_mbm_complete_entries
+				;;
+			generate)
+				_mbm_complete_entries
+				;;
+			cp|copy|mv|rename)
+				_mbm_complete_entries
+				;;
+		esac
+	else
+		COMPREPLY+=($(compgen -W "${commands}" -- ${cur}))
+		_mbm_complete_entries 1
+	fi
+}
+
+complete -o filenames -o nospace -F _mbm mbm

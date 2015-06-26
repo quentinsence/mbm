@@ -10,6 +10,7 @@ Why use mbm? Why another bookmark manager?
 The first commit comes from the original post on http://www.reddit.com/r/commandline/comments/32jxeu/i_am_looking_for_a_specific_cli_bookmark_manager/ by user http://www.reddit.com/user/ibenchpressakeyboard
 
 new features:
+.bash completion for urls, tags and commands
 .tags as directories with symlinks to the cached files
 .git powered, all changes in the .bookmarks dir are tracked with git
 .open link in browser
