@@ -155,7 +155,7 @@ usage() {
 	# the last url is sent to the clipboard
 	
     $ $PROGRAM [open] <query>
-	# search the bookmarks via full-text <query>
+	# search the bookmarks via full-text <query> or path to url file
 	# and open the last url found in the default browser
 	
     $ $PROGRAM stats
