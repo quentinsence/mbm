@@ -45,7 +45,7 @@ $ mbm open tags/bash/[TAB KEY]
 $ mbm open tags/bash/http---stackoverflow.com-questions-3124556-clean-way-to-launch-the-web-browser-from-shell-script.html
 opening http://stackoverflow.com/questions/3124556/clean-way-to-launch-the-web-browser-from-shell-script
 ```
-tab completion
+bash completion
 ```
 $ mbm ca[TAB KEY]
 $ mbm cache/[TAB KEY]
@@ -72,6 +72,15 @@ the page below has no indication in the url or description of the keyword but th
 $ mbm search circadian
 http://www.bengreenfieldfitness.com/2012/11/insomnia-natural-remedies/ 
 opening http://www.bengreenfieldfitness.com/2012/11/insomnia-natural-remedies/ 
+```
+refresh bookmarks
+```
+$ mbm fetch
+refreshes all bookmarks
+$ mbm fetch tags\bash
+refreshes only urls tagged with bash
+$ mbm fetch cache\https---www.reddit.com-r-commandline-comments-32jxeu-i-am-looking-for-a-specific-cli-bookmark-manager-2015-06-24.html
+refreshes only that url
 ```
 
 # Depends on:
