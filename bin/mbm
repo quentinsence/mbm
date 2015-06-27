@@ -158,10 +158,7 @@ usage() {
 	# search the bookmarks via full-text <query> or path to url file
 	# and open the last url found in the default browser
 	
-    $ $PROGRAM stats
-	# return the amount of bookmarks and list all tags
-
-    $ $PROGRAM list
+    $ $PROGRAM ls
         # list all bookmarks
 
     $ $PROGRAM rm <urlfile>
@@ -178,14 +175,13 @@ EOF
 case "$1" in
   version|-V|--version) echo $PROGRAM $VERSION ;;
   help|-h|--help) usage ;;
-  add|insert) add "$@" ;;
-  rm|remove|del) remove "$@" ;;
-  list|show|ls) list ;;
-  stats) stats ;;
-  fetch|sync) fetch ;;
+  add) add "$@" ;;
+  rm) remove "$@" ;;
+  ls) list ;;
+  fetch) fetch ;;
   open) open "${*:2}" ;;
   *) open "$@";;
-  grep|search) search ${*:2} ;;
+  search) search ${*:2} ;;
 esac
 
 exit 0
