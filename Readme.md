@@ -32,8 +32,8 @@ $ make uninstall
 bash completion
 ```
 $ mbm [TAB KEY]
-add      del      grep     insert   ls       remove   search   stats    tags/    
-cache/   fetch    help     list     open     rm       show     sync     version
+add      ls       search   stats    tags/    
+cache/   fetch    help     open     rm       version
 
 $ mbm op[TAB KEY]
 $ mbm open ta[TAB KEY]

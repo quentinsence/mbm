@@ -154,6 +154,9 @@ usage() {
 	# search the bookmarks via full-text <query>
 	# the last url is sent to the clipboard
 	
+    $ $PROGRAM fetch [tags\<tag>]
+        # fetch all bookmarks again, optionally only bookmarks under a given tag
+
     $ $PROGRAM [open] <query>
 	# search the bookmarks via full-text <query> or path to url file
 	# and open the last url found in the default browser
