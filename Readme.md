@@ -6,7 +6,7 @@ The full list of bookmarks is maintained in a plain text file at ~/.bookmarks/li
 Tags are directories holding symbolic links to the actual files  
 This simple structure allows to process the bookmarks store with any common GNU tools
 
-# Why use mbm? Why another bookmark manager?
+# Why use mbm? 
 * search: content of linked pages is cached as a result the keyword search is more powerful searching through all pages contents
 * git: keep track of changes made to your links and content of your links
 * portability:
