@@ -88,8 +88,11 @@ add(){
 
 fetch(){
   #fetch again all links. record all changes
-  awk -F '|' -v BMDIR=$BMDIR '{
-      printf("\n%5d update %s",NR,$3) 
+  tags=$2
+  [[ -d $BMDIR/$tags ]] || [[ -f $BMDIR/$tags ]] || die "$BMDIR/$tags does not exist"
+  tag=`echo $tags | awk -F '/' '{print $2}'`
+  awk -F '|' -v BMDIR=$BMDIR '/'$tag'/ {
+      printf("\n%5d update %s",NR,$1)
       system("curl "$1" > "$3"")
       system("git -C "BMDIR" commit -am \"updated "$1"\"")
       }' $list
@@ -155,7 +158,10 @@ usage() {
 	# the last url is sent to the clipboard
 	
     $ $PROGRAM fetch [tags\<tag>]
-        # fetch all bookmarks again, optionally only bookmarks under a given tag
+    $ $PROGRAM fetch [cache\<url>]
+    # fetch all bookmarks again
+    # optionally fetch only bookmarks under a tag
+    #                  only 1 bookmark in cache
 
     $ $PROGRAM [open] <query>
 	# search the bookmarks via full-text <query> or path to url file
@@ -181,7 +187,7 @@ case "$1" in
   add) add "$@" ;;
   rm) remove "$@" ;;
   ls) list ;;
-  fetch) fetch ;;
+  fetch) fetch "$@" ;;
   open) open "${*:2}" ;;
   *) open "$@";;
   search) search ${*:2} ;;

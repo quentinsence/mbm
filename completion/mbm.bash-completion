@@ -62,7 +62,7 @@ _mbm()
 	if [[ $COMP_CWORD -gt 1 ]]; then
 		local lastarg="${COMP_WORDS[$COMP_CWORD-1]}"
 		case "${COMP_WORDS[1]}" in
-			ls|open|search|add|rm)
+			ls|open|search|add|rm|fetch)
 				_mbm_complete_entries
 				;;
 			show|-*)
