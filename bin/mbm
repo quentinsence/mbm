@@ -136,8 +136,7 @@ list(){
     {
       printf "  \033[36m%s\033[0m\n", $1
       printf "  \033[33m%s\033[0m\n", $2
-      printf "  \033[90m%s\033[0m\n", $3
-      printf "  \033[90m%s\033[0m\n\n", $4
+      printf "  \033[90m%s %s\033[0m\n\n", $4, $3
     }'
   echo
 }
@@ -167,7 +166,7 @@ usage() {
 	# search the bookmarks via full-text <query> or path to url file
 	# and open the last url found in the default browser
 	
-    $ $PROGRAM ls
+    $ $PROGRAM [ls]
         # list all bookmarks
 
     $ $PROGRAM rm <urlfile>
