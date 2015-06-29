@@ -35,6 +35,7 @@ open() {
       fi
   fi
   echo opening "$url"
+  echo -n "$url" | xclip -selection "clipboard"
   xdg-open "$url"
 }
 
@@ -111,21 +112,13 @@ remove(){
 }
 
 search(){
-  terms=$@
+  terms="$@"
   termsforgrep=$(echo $terms | sed 's/ /\\|/g')
   for i in $(grep -li "$termsforgrep" $CACHEDIR/*) ; do
     grep $i $list
   done
   #send the last url found to the clipboard
   #echo -n `grep $i $list | awk -F '|' '{print $1}' | tail -1` | xclip -selection "clipboard"
-}
-
-stats(){
-  echo
-  echo $list has
-  echo `wc -l $list | awk '{print $1}'` bookmarks
-  echo `ls -C1 $BMDIR/tags | wc -l | awk '{print $1}'` tags: `ls $BMDIR/tags`
-  echo
 }
 
 list(){
