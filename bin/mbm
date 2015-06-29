@@ -107,7 +107,9 @@ remove(){
   rm $BMDIR/$pathfile || die "could not delete $BMDIR/$pathfile"
   urlfile=`echo $pathfile | awk -F '/' '{print $NF}'`
   sed -i '\^'$urlfile'^d' $list
-  rm $BMDIR/tags/*/$urlfile || die "could not delete tags for $pathfile"
+  rm $BMDIR/tags/*/$urlfile || die "could not delete $pathfile in tags/"
+  #cleanup empty tags if necessary
+  rmdir --ignore-fail-on-non-empty $BMDIR/tags/*
   git -C $BMDIR commit -am "removed bookmark $urlfile"
 }
 
