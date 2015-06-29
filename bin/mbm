@@ -19,6 +19,11 @@ die() {
 
 open() {
   keys="$@"
+  if [ -z "$keys" ]
+    then
+    list
+    exit
+  fi
   if [ -f $BMDIR/$keys ]
     then
       #if cached url file exists then extracts its url from list file 
