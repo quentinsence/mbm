@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION="0.4.1"
+VERSION="0.4"
 
 PROGRAM="${0##*/}"
 
@@ -24,9 +24,9 @@ open() {
     list
     exit
   fi
-  if [ -f "$BMDIR/$keys" ]
+  if [ -f $BMDIR/$keys ]
     then
-      #if cached url file exists then extracts its url from list file
+      #if cached url file exists then extracts its url from list file 
       file=`echo $keys | awk -F '/' '{print $NF}'`
       url=`awk -F '|' '/'$file'/{print $1}' $list`
     else
@@ -47,14 +47,14 @@ open() {
 add(){
 
   [[ -d $BMDIR/.git ]] || git -C $BMDIR init
-
+  
   overwrite=lulz
   gitnew="new"
   url=$2
   #lowercase tags to reduce duplicate categories
   tags=${@:3}
   tags=${tags,,}
-
+  
   count=$(grep "$url |" "$list" | wc -l)
   if [ $count -gt 0 ]
     then
@@ -77,17 +77,17 @@ add(){
   urlforfile=$(echo $url | sed 's/[/?=!:_]/-/g')
   cachefile=$CACHEDIR/${urlforfile}.html
   curl -s $url > $cachefile
-
+  
   title=$(sed -rn 's/.*<title>(.*)<\/title>.*/\1/p' $cachefile)
   echo "Description default:$title "
   [ -z $description ] && description=$title
   echo "$url | $description | $cachefile | $tags" >> $list
-
+  
   for tag in $tags ; do
     mkdir -p $BMDIR/tags/$tag
     ln -sf $cachefile $BMDIR/tags/$tag/${urlforfile}.html
   done
-
+  
   git -C $BMDIR add .
   git -C $BMDIR commit -am "$gitnew bookmark $url"
 }
@@ -151,11 +151,11 @@ usage() {
 
     $ $PROGRAM add <url> [<tags>]
         # add a bookmark with the given url and optional tags
-
+        
     $ $PROGRAM search <query>
 	# search the bookmarks via full-text <query>
 	# the last url is sent to the clipboard
-
+	
     $ $PROGRAM fetch [tags\<tag>]
     $ $PROGRAM fetch [cache\<url>]
     # fetch all bookmarks again
@@ -165,7 +165,7 @@ usage() {
     $ $PROGRAM [open] <query>
 	# search the bookmarks via full-text <query> or path to url file
 	# and open the last url found in the default browser
-
+	
     $ $PROGRAM [ls]
         # list all bookmarks
 
