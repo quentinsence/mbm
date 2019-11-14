@@ -188,8 +188,8 @@ case "$1" in
   ls) list ;;
   fetch) fetch "$@" ;;
   open) open "${*:2}" ;;
-  *) open "$@";;
   search) search ${*:2} ;;
+  *) open "$@";;
 esac
 
 exit 0
